@@ -1,0 +1,44 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# EditorConfig
+*.sublime-project
+*.sublime-workspace
+.vscode/
+*.code-workspace
+
+# VS Code settings
+*.log
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Node/JS stuff (caso futuramente use npm)
+node_modules/
+dist/
+build/
+.env
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+*.cache
+*.log
+
+# Termux / Linux geral
+*.tar
+*.tar.gz
+*.zip
+
+# Acode no Android (caminhos manuais, se exportar)
+acode-project-export/
+*.apk
+*.history/
+
+# Ignorar pastas de backup pessoal
+_backup/
+__MACOSX/
