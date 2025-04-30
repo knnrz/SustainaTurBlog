@@ -1,0 +1,7 @@
+ 
+      <article>
+        <h3>Aqui vai o titulo</h3>
+        <p>aqui vai uma descrição</p>
+        <a href="../artigos/exemplo.html" class="btn-small">Leia Mais</a>
+      </article>
+ 
