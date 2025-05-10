@@ -1,54 +1,76 @@
-// === Mostrar ou esconder o botão voltar ao topo ===
-const backToTopButton = document.getElementById('back-to-top');
 
-window.addEventListener('scroll', () => {
-  if (window.pageYOffset > 300) {
-    backToTopButton.style.display = 'block';
-  } else {
-    backToTopButton.style.display = 'none';
-  }
-});
+  document.addEventListener("DOMContentLoaded", async () => {
+    const baseURL = location.hostname.includes('blog.')
+      ? 'https://blog.sustainatrip.tur.br/partials/'
+      : 'https://sustainatrip.tur.br/partials/';
 
-// === Voltar ao topo quando clicar ===
-backToTopButton.addEventListener('click', () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-});
-
-// === Validação do formulário ===
-const form = document.getElementById('formulario-contato');
-
-if (form) {
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const nome = document.getElementById('nome');
-    const email = document.getElementById('email');
-    const mensagem = document.getElementById('mensagem');
-
-    if (nome.value.trim() === '' || email.value.trim() === '' || mensagem.value.trim() === '') {
-      alert('Por favor, preencha todos os campos!');
-      return;
+    // Função para carregar e injetar um partial
+    async function injectPartial(url, position) {
+      try {
+        const res = await fetch(url);
+        const html = await res.text();
+        document.body.insertAdjacentHTML(position, html);
+      } catch (err) {
+        console.error(`Erro ao carregar ${url}:`, err);
+      }
     }
 
-    // Se quiser integrar o EmailJS, aqui seria o lugar:
-    /*
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
-      from_name: nome.value,
-      from_email: email.value,
-      message: mensagem.value,
-    }).then(function(response) {
-      console.log('SUCESSO!', response.status, response.text);
-      alert('Mensagem enviada com sucesso!');
-      form.reset();
-    }, function(error) {
-      console.error('ERRO...', error);
-      alert('Erro ao enviar mensagem, tente novamente.');
-    });
-    */
+    // Carrega header e footer antes de prosseguir
+    await injectPartial(baseURL + "header.html", "afterbegin");
+    await injectPartial(baseURL + "footer.html", "beforeend");
 
-    alert('Mensagem validada! (Integre o EmailJS aqui)');
+    // Agora sim, inicia o resto do script
+
+    // Botão de voltar ao topo
+    const backToTopButton = document.getElementById('back-to-top');
+    if (backToTopButton) {
+      window.addEventListener('scroll', () => {
+        backToTopButton.style.display = window.pageYOffset > 300 ? 'block' : 'none';
+      });
+      backToTopButton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // Animações suaves ao entrar na tela
+    const animatedSections = document.querySelectorAll('section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    animatedSections.forEach(section => observer.observe(section));
+
+    // Banner de cookies
+    const banner = document.getElementById('cookie-banner');
+    const btn = document.getElementById('accept-cookies');
+    if (!localStorage.getItem('cookiesAccepted')) banner?.style.setProperty('display', 'flex');
+    btn?.addEventListener('click', () => {
+      localStorage.setItem('cookiesAccepted', 'yes');
+      banner.style.display = 'none';
+      initAnalyticsTool();
+    });
+    if (localStorage.getItem('cookiesAccepted')) initAnalyticsTool();
+
+    // Popup inicial
+    const popup = document.getElementById("sustaina-popup");
+    if (!localStorage.getItem("popupVisto") && popup) popup.style.display = "flex";
+    window.fecharPopup = function () {
+      if (popup) popup.style.display = "none";
+      localStorage.setItem("popupVisto", "true");
+    };
+
+    // Tema escuro/claro
+    const toggle = document.getElementById("theme-toggle");
+    const currentTheme = localStorage.getItem("theme") || "light";
+    document.body.classList.add(`${currentTheme}-theme`);
+    toggle?.addEventListener("click", () => {
+      const isDark = document.body.classList.contains("dark-theme");
+      document.body.classList.toggle("dark-theme", !isDark);
+      document.body.classList.toggle("light-theme", isDark);
+      localStorage.setItem("theme", isDark ? "light" : "dark");
+    });
   });
-}
+
